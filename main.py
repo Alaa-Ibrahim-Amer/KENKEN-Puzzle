@@ -91,9 +91,9 @@ class TheGUI(Frame):
         self.btn_exit = Button(self, text="Exit")
         self.btn_exit.bind("<ButtonRelease-1>", self.click_Exit)
 
-        self.btn_quit.pack(side=BOTTOM, fill=X, expand=YES)
-        self.btn_next.pack(side=BOTTOM, fill=X, expand=YES)
         self.btn_exit.pack(side=BOTTOM, fill=X, expand=YES)
+        self.btn_next.pack(side=BOTTOM, fill=X, expand=YES)
+        self.btn_quit.pack(side=BOTTOM, fill=X, expand=YES)
         self.btn_solve.pack(side=BOTTOM, fill=X, expand=YES)
         
 
@@ -291,3 +291,127 @@ class Generator():
 
         board = {(j + 1, i + 1): board[i][j] for i in range(self.size) for j in range(self.size)}
         #print (board)
+        
+        # sorted list of the positions (x,y)
+        uncaged = sorted(board.keys(), key=lambda var: var[1])
+
+        # list of cages
+        # list of lists
+        # target > 50 ope > * taple (1,)
+        #self.cliques = []
+
+        while uncaged:
+
+            self.cliques.append([])  # list of list
+
+            csize = randint(1, 4)  # cage size
+
+            cell = uncaged[0]
+
+            uncaged.remove(cell)
+
+            self.cliques[-1].append(cell)
+
+            for _ in range(csize - 1):  # belf random times
+
+                adjs = [other for other in uncaged if self.adjacent(cell, other)]  # list of all adjacents to cell
+
+                cell = choice(adjs) if adjs else None
+
+                if not cell:
+                    break
+
+                uncaged.remove(cell)
+
+                self.cliques[-1].append(cell)
+
+            csize = len(self.cliques[-1])
+            if csize == 1:
+                cell = self.cliques[-1][0]
+                self.cliques[-1] = ((cell,), '.', board[cell])
+                continue
+            elif csize == 2:
+                fst, snd = self.cliques[-1][0], self.cliques[-1][1]
+                if board[fst] / board[snd] > 0 and not board[fst] % board[snd]:
+                    operator = "/"  # choice("+-*/")
+                else:
+                    operator = "-"  # choice("+-*")
+            else:
+                operator = choice("+*")
+
+            target = reduce(self.operation(operator), [board[cell] for cell in self.cliques[-1]])
+
+            self.cliques[-1] = (tuple(self.cliques[-1]), operator, int(target))
+
+        #print (self.cliques)
+
+        return solution
+
+    def op_gui(self):
+        puzzlelist = []
+        cells =[]
+        operators =[]
+        targets=[]
+        #self.generate()
+        for i in range(len(self.cliques)):
+            members, operator, target = self.cliques[i]
+            targets.append(target)
+            operators.append(operator)
+            for x in range(len(members)):
+                if (x == 0):
+                    cells.append (members[x])
+                  # puzzlelist.append(str(target)+str(operator))
+        for i in range(self.size): # row
+            for j in range(self.size): #col
+                if  (len(cells) > 0) and (j+1,i+1) == cells[0] :
+                    temp = cells[0]
+                    cells.remove(temp)
+                    puzzlelist.append(str(targets[0]) + str(operators[0]))
+                    temp2 = operators[0]
+                    operators.remove(temp2)
+                    temp3 = targets[0]
+                    targets.remove(temp3)
+                else:
+                    puzzlelist.append(' ')
+
+
+            #print(cells)
+        #print (puzzlelist)
+
+        return puzzlelist
+
+
+if __name__ == '__main__':
+    #gather = rename.gather(10, "kenken.csv")
+    # compare 
+    t1 = time()
+    #operation 
+    t2 = time()
+    #gather(10, "kenken.csv")
+    root = Tk()  # Initializes the root menu for game to appear
+    root.title("Set size and mode")
+    root.geometry("650x710")
+    f=pre_Gui(root)
+    
+    var = IntVar()
+    size , var = f.i(var)  # Initializes the graphics to display the game
+    #print(size)
+    root.mainloop()  # Runs the game
+
+    root1 = Tk()  # Initializes the root menu for game to appear
+    root1.title("KenKen")
+    root1.geometry("650x710")
+    f1 = TheGUI(root1,int(size.get()),var.get())  # Initializes the graphics to display the game
+    #f1.create_widgets()
+
+    root1.mainloop()  # Runs the game
+
+
+
+
+
+
+
+
+
+
