@@ -242,3 +242,52 @@ class pre_Gui(Frame):
         #return messagebox.showinfo('PythonGuides', f'You Selected {output}.'), self.var
         return self.var
 
+# class generator
+class Generator():
+    def __init__(self, a):
+        self.size = a
+        self.cliques =[]
+        self.solution = self.generate()
+    def adjacent(self,xy1, xy2):
+        """
+        Checks wheither two positions represented in 2D coordinates are adjacent
+        """
+        x1, y1 = xy1
+        x2, y2 = xy2
+
+        dx, dy = x1 - x2, y1 - y2
+
+        return (dx == 0 and abs(dy) == 1) or (dy == 0 and abs(dx) == 1)
+
+    def operation(self,operator):
+        """
+        A utility function used in order to determine the operation corresponding
+        to the operator that is given in string format
+        """
+        if operator == '+':
+            return lambda a, b: a + b
+        elif operator == '-':
+            return lambda a, b: abs(a - b)
+        elif operator == '*':
+            return lambda a, b: a * b
+        elif operator == '/':
+            return lambda a, b: a / b
+        else:
+            return None
+
+    def generate(self):
+        board = [[((i + j) % self.size) + 1 for i in range(self.size)] for j in range(self.size)]
+        for _ in range(self.size):
+            shuffle(board)
+        for c1 in range(self.size):
+            for c2 in range(self.size):
+                if random() > 0.5:
+                    for r in range(self.size):
+                        board[r][c1], board[r][c2] = board[r][c2], board[r][c1]
+        solution =board
+
+        # (x,y) value
+        # dictionary > key (x,y) : value (no. inside the cell)
+
+        board = {(j + 1, i + 1): board[i][j] for i in range(self.size) for j in range(self.size)}
+        #print (board)
