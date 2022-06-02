@@ -4,7 +4,7 @@ from tkinter import ttk
 from functools import partial
 from sys import stderr, stdin
 import csp
-import rename
+import kenken
 
 # @ product: creation of the variables' domains
 # @ permutations: determine the satisfiability of an operation
@@ -126,3 +126,119 @@ class TheGUI(Frame):
     def click_Exit(self, event):
         """ Exits the KenKen game """
         exit()
+    
+    def surrend(self, event):
+        """ Shows the solution to the user if gives up on current puzzle """
+        #solution = self.kenken.surrender(self.counter)  # Calls the surrender method of the KenKen object
+        #solution = self.g.generate()
+        # Display the solution to the user
+        for row in range(len(self.solution)):
+            for column in range(len(self.solution)):
+                self.w.itemconfigure(self.numbers[row][column], text=self.solution[row][column])
+    
+    def modesolver(self):
+        ken = kenken.Kenken(self.size, self.cliques)
+
+        if self.mode == 1:
+            print("Using BT algorithm to solve the puzzle")
+            #print()
+            assignment = csp.backtracking_search(ken)
+            #print(assignment)
+            l= ken.display(assignment)   
+
+        	
+        elif self.mode == 2:
+            print("Using FC algorithm to solve the puzzle")
+            #print()
+            assignment = csp.backtracking_search(ken,inference=csp.forward_checking)
+            #print(assignment)
+            l = ken.display(assignment)
+        elif self.mode == 3:        
+            print("Using MAC algorithm to solve the puzzle")
+            #print()
+            assignment = csp.backtracking_search(ken,inference=csp.mac)
+            #print(assignment)
+            l = ken.display(assignment)
+            #print("l is" + str(l))
+        else:
+            print("Error in selected algorithm!!!!")
+        return l
+
+    def solve(self, event):
+        """ Shows the solution to the user if gives up on current puzzle """
+        #solution = self.kenken.surrender(self.counter)  # Calls the surrender method of the KenKen object
+        #solution = self.g.generate()
+        # Display the solution to the user
+        index = 0
+        x = self.modesolver()
+        for row in range(self.size):
+            for column in range(self.size):
+                #print("iterator in x" + str(x[index]))
+                #print(str(index))
+                #print("column" + str(column) )
+                self.w.itemconfigure(self.numbers[row][column], text=x[index])
+                index += 1
+
+    def next(self, event):
+        self.root.destroy()
+        # self.create_widgets()
+        root1 = Tk()  # Initializes the root menu for game to appear
+        root1.title("KenKen")
+        root1.geometry("650x710")
+        gui = TheGUI(root1, self.size, self.mode)
+ 
+ # first gui 
+ 
+
+class pre_Gui(Frame):
+    def __init__(self, master):
+        """ Initializes the GUI for KenKen Game """
+        Frame.__init__(self, master)  # Creates the frame
+        # Creates the canvas that will display the game
+        self.w = Canvas(master, width=1002, height=1003)
+        self.var = IntVar()
+        self.w.pack()
+        self.pack()
+
+    #**not used ** function used to be called in set button
+    def storeSize(num1):
+        n1 = int(num1.get())
+        #print("first" + str(n1))
+        return n1
+
+    def i(self,var):
+        number1 = StringVar()
+        self.var=var
+        l1 = Label(root, text="Enter the size of KenKen").place(x=20, y=60)
+        t1 = Entry(root, textvariable=number1).place(x=200, y=60)
+
+       #for set button
+       # returnSize = partial(storeSize, number1)
+       # b1 = Button(root, text="Set", command=returnSize).place(x=200, y=300)
+
+        b2 = Button(root, text="Continue", command=root.destroy).place(x=250, y=300)
+
+        self.r1 = Radiobutton(root, text="Backtracking", variable=self.var, value=1, command=self.viewSelected).place(x=100, y=160)
+        self.r2 = Radiobutton(root, text="Backtracking with forward checking", variable=self.var, value=2,command=self.viewSelected).place(x=100, y=180)
+        self.r3 = Radiobutton(root, text="Backtracking with arc consistency", variable=self.var, value=3,command=self.viewSelected).place(x=100, y=200)
+
+        return number1 , self.var
+
+
+    def viewSelected(self):
+        choice  = self.var.get()
+        selected = 0
+        if choice == 1:
+            output = "Backtracking"
+            selected = 1
+        elif choice == 2:
+            output =  "Backtracking with forward checking"
+            selected = 2
+        elif choice == 3:
+            output =  "Backtracking with arc consistency"
+            selected = 3
+        else:
+            output = "Invalid selection"
+        #return messagebox.showinfo('PythonGuides', f'You Selected {output}.'), self.var
+        return self.var
+
