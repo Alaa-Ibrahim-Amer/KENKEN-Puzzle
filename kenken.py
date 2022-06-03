@@ -191,22 +191,24 @@ class Kenken(csp.CSP):
                         atomic[member] = None
         else:
             atomic = {member:None for members in self.variables for member in members}
-        print("before"+ str(atomic))
+        # for debuugging 
+        #print("before"+ str(atomic))
         atomic = sorted(atomic.items(), key=lambda item: item[0][1] * self.size + item[0][0])## changed 
-        print("after"+ str(atomic))
+        #print("after"+ str(atomic))
         x=[]
         y = []
         for i in range(len(atomic)):
             t1, t2= atomic[i]
             x.append(t1)
             y.append(t2)
-        print("the va;ue of y is " + str(y))
+        # for debugging
+        #print("the value of y is " + str(y))
         padding = lambda c, offset: (c * (self.padding + 2 - offset))
 
         embrace = lambda inner, beg, end: beg + inner + end
 
         mentioned = set()
-
+        # this function is used for debugging and see the output in the console 
         def meta(member):
             for var, val in self.meta.items():
                 if member in var and var not in mentioned:

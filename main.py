@@ -1,3 +1,4 @@
+import sys
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
@@ -17,6 +18,8 @@ from time import time
 
 # @ writer: output benchmarking data in a csv format
 from csv import writer
+# arguments
+debugmode = sys.argv[1]
 
 class TheGUI(Frame):
     def __init__(self, master,a,b):
@@ -31,6 +34,8 @@ class TheGUI(Frame):
         self.solution = self.g.solution
         self.cliques = self.g.cliques
         self.flag = 1
+        self.t1 = 0
+        self.t2 = 0
         self.create_widgets()
         self.pack()
         self.w.pack()
@@ -95,7 +100,6 @@ class TheGUI(Frame):
         self.btn_next.pack(side=BOTTOM, fill=X, expand=YES)
         self.btn_quit.pack(side=BOTTOM, fill=X, expand=YES)
         self.btn_solve.pack(side=BOTTOM, fill=X, expand=YES)
-        
 
         self.buttonlist.append(self.btn_quit)
         self.buttonlist.append(self.btn_next)
@@ -142,7 +146,9 @@ class TheGUI(Frame):
         if self.mode == 1:
             print("Using BT algorithm to solve the puzzle")
             #print()
+            self.t1 = time() 
             assignment = csp.backtracking_search(ken)
+            self.t2 = time()
             #print(assignment)
             l= ken.display(assignment)   
 
@@ -150,13 +156,17 @@ class TheGUI(Frame):
         elif self.mode == 2:
             print("Using FC algorithm to solve the puzzle")
             #print()
+            self.t1 = time() 
             assignment = csp.backtracking_search(ken,inference=csp.forward_checking)
+            self.t2 = time() 
             #print(assignment)
             l = ken.display(assignment)
         elif self.mode == 3:        
             print("Using MAC algorithm to solve the puzzle")
             #print()
+            self.t1 = time() 
             assignment = csp.backtracking_search(ken,inference=csp.mac)
+            self.t2 = time() 
             #print(assignment)
             l = ken.display(assignment)
             #print("l is" + str(l))
@@ -186,7 +196,7 @@ class TheGUI(Frame):
         root1.title("KenKen")
         root1.geometry("650x710")
         gui = TheGUI(root1, self.size, self.mode)
- 
+         
  # first gui 
  
 
@@ -380,31 +390,54 @@ class Generator():
 
         return puzzlelist
 
-
-if __name__ == '__main__':
-    #gather = rename.gather(10, "kenken.csv")
-    # compare 
+# performance 
+def performance():
+    size = 7
+    gen = Generator(size)
+    ken = kenken.Kenken(size, gen.cliques)
     t1 = time()
-    #operation 
+    for i in range(100):
+        assignment = csp.backtracking_search(ken)
     t2 = time()
-    #gather(10, "kenken.csv")
-    root = Tk()  # Initializes the root menu for game to appear
-    root.title("Set size and mode")
-    root.geometry("650x710")
-    f=pre_Gui(root)
-    
-    var = IntVar()
-    size , var = f.i(var)  # Initializes the graphics to display the game
-    #print(size)
-    root.mainloop()  # Runs the game
+    print("the backtracking algorithm "+str(t2-t1))
+    #################################################
+    #the second 
+    t1 = time()
+    for i in range(100):
+        assignment = csp.backtracking_search(ken,inference=csp.forward_checking)
+    t2 = time()
+    print("the backtracking with forward checking algorithm "+str(t2-t1))
+    ####################################################
+    t1 = time()
+    for i in range(100):
+        assignment = csp.backtracking_search(ken,inference=csp.mac)
+    t2 = time()
+    print("the backtracking with arc consistency  algorithm "+str(t2-t1))
+if __name__ == '__main__':
+    #gather = kenken.gather(10, "kenken.csv")
+    print("the debug mode is "+str(debugmode))
+    if (debugmode == str(1)):
+        performance()
 
-    root1 = Tk()  # Initializes the root menu for game to appear
-    root1.title("KenKen")
-    root1.geometry("650x710")
-    f1 = TheGUI(root1,int(size.get()),var.get())  # Initializes the graphics to display the game
-    #f1.create_widgets()
+    else:
+        #gather(10, "kenken.csv")
+        root = Tk()  # Initializes the root menu for game to appear
+        root.title("Set size and mode")
+        root.geometry("650x710")
+        f=pre_Gui(root)
+        
+        var = IntVar()
+        size , var = f.i(var)  # Initializes the graphics to display the game
+        #print(size)
+        root.mainloop()  # Runs the game
 
-    root1.mainloop()  # Runs the game
+        root1 = Tk()  # Initializes the root menu for game to appear
+        root1.title("KenKen")
+        root1.geometry("650x710")
+        f1 = TheGUI(root1,int(size.get()),var.get())  # Initializes the graphics to display the game
+        #f1.create_widgets()
+
+        root1.mainloop()  # Runs the game
 
 
 
