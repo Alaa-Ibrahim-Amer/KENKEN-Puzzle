@@ -237,4 +237,37 @@ class Kenken(csp.CSP):
             print(rpadding)
         return y
 
-  
+    def info(self):
+        """
+        Print debugging info
+        """
+
+        print("\nVariables:")
+        for var in self.variables:
+            print(var)
+
+        print("\nDomains:")
+        for var in self.variables:
+            print("domains[", var, "] =", self.domains[var])
+
+        print("\nNeighbors:")
+        for var in self.variables:
+            print("neighbors[", var, "] =", self.neighbors[var])  
+
+def benchmark(kenken, algorithm):
+        """
+        Used in order to benchmark the given algorithm in terms of
+          * The number of nodes it visits
+          * The number of constraint checks it performs
+          * The number of assignments it performs
+          * The completion time
+        """
+        kenken.checks = kenken.nassigns = 0
+
+        dt = time()
+
+        assignment = algorithm(kenken)
+
+        dt = time() - dt
+
+        return assignment, (kenken.checks, kenken.nassigns, dt)            
