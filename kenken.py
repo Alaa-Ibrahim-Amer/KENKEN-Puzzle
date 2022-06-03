@@ -110,3 +110,32 @@ def operation(operator):
         return lambda a, b: a / b
     else:
         return None 
+
+def gdomains(size, cliques):
+    
+    domains = {}
+    for clique in cliques:
+        members, operator, target = clique
+
+        domains[members] = list(product(range(1, size + 1), repeat=len(members)))
+
+        qualifies = lambda values: not conflicting(members, values, members, values) and satisfies(values, operation(operator), target)
+
+        domains[members] = list(filter(qualifies, domains[members]))
+
+    return domains
+
+def gneighbors(cliques):
+    
+    neighbors = {}
+    for members, _, _ in cliques:
+        neighbors[members] = []
+
+    for A, _, _ in cliques:
+        for B, _, _ in cliques:
+            if A != B and B not in neighbors[A]:
+                if conflicting(A, [-1] * len(A), B, [-1] * len(B)):
+                    neighbors[A].append(B)
+                    neighbors[B].append(A)
+
+    return neighbors
