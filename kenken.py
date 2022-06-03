@@ -270,4 +270,55 @@ def benchmark(kenken, algorithm):
 
         dt = time() - dt
 
-        return assignment, (kenken.checks, kenken.nassigns, dt)            
+        return assignment, (kenken.checks, kenken.nassigns, dt)
+
+
+def gather(iterations, out):
+    
+
+
+    """
+    Benchmark each one of the following algorithms for various kenken puzzles
+
+      * For every one of the following algorithms
+       * For every possible size of a kenken board
+         * Create 'iterations' random kenken puzzles of the current size
+           and evaluate the algorithm on each one of them in order to get
+           statistically sound data. Then calculate the average evaluation
+           of the algorithm for the current size.
+
+      * Save the results into a csv file
+    """
+    bt         = lambda ken: csp.backtracking_search(ken)
+    fc         = lambda ken: csp.backtracking_search(ken, inference=csp.forward_checking)
+    mac        = lambda ken: csp.backtracking_search(ken, inference=csp.mac)
+    
+    algorithms = {
+        "BT": bt,
+        "FC": fc,
+        "MAC": mac
+    }
+
+    with open(out, "w+") as file:
+
+        out = writer(file)
+
+        out.writerow(["Algorithm", "Size", "Result", "Constraint checks", "Assignments", "Completion time"])
+
+        for name, algorithm in algorithms.items():
+            for size in range(3, 10):
+                generator = main.Generator(size)
+                checks, assignments, dt = (0, 0, 0)
+                for iteration in range(1, iterations + 1):
+                    generator.generate()
+                    size = generator.size
+                    cliques = generator.cliques
+                    assignment, data = benchmark(Kenken(size, cliques), algorithm)
+
+                    print("algorithm =",  name, "size =", size, "iteration =", iteration, "result =", "Success" if assignment else "Failure", file=stderr)
+
+                    checks      += data[0] / iterations
+                    assignments += data[1] / iterations
+                    dt          += data[2] / iterations
+                    
+                out.writerow([name, size, checks, assignments, dt])
