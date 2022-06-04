@@ -405,11 +405,15 @@ class Generator():
 
 # performance 
 def performance():
-    size = 7
-    gen = Generator(size)
-    ken = kenken.Kenken(size, gen.cliques)
+    size = 5
+    # generate 100 boards
+    gen = []
+    for i in range(100):
+        gen.append(Generator(size))
+    
     t1 = time()
     for i in range(100):
+        ken = kenken.Kenken(size, gen[i].cliques)
         assignment = csp.backtracking_search(ken)
     t2 = time()
     print("the backtracking algorithm "+str(t2-t1))
@@ -417,12 +421,14 @@ def performance():
     #the second 
     t1 = time()
     for i in range(100):
+        ken = kenken.Kenken(size, gen[i].cliques)
         assignment = csp.backtracking_search(ken,inference=csp.forward_checking)
     t2 = time()
     print("the backtracking with forward checking algorithm "+str(t2-t1))
     ####################################################
     t1 = time()
     for i in range(100):
+        ken = kenken.Kenken(size, gen[i].cliques)
         assignment = csp.backtracking_search(ken,inference=csp.mac)
     t2 = time()
     print("the backtracking with arc consistency  algorithm "+str(t2-t1))
