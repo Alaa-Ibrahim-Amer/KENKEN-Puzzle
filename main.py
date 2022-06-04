@@ -191,11 +191,23 @@ class TheGUI(Frame):
 
     def next(self, event):
         self.root.destroy()
-        # self.create_widgets()
-        root1 = Tk()  # Initializes the root menu for game to appear
-        root1.title("KenKen")
-        root1.geometry("650x710")
-        gui = TheGUI(root1, self.size, self.mode)
+        root2 = Tk()  # Initializes the root menu for game to appear
+        root2.title("Set size and mode")
+        root2.geometry("650x710")
+        ff = pre_Gui(root2)
+
+        var1 = IntVar()
+        size2, var1 = ff.i(var1)  # Initializes the graphics to display the game
+        # print(size)
+        root2.mainloop()  # Runs the game
+
+        root3 = Tk()  # Initializes the root menu for game to appear
+        root3.title("KenKen")
+        root3.geometry("650x710")
+        fff = TheGUI(root3, int(size2.get()), var1.get())  # Initializes the graphics to display the game
+        # f1.create_widgets()
+
+        root3.mainloop()  # Runs the game
          
  # first gui 
  
@@ -203,6 +215,7 @@ class TheGUI(Frame):
 class pre_Gui(Frame):
     def __init__(self, master):
         """ Initializes the GUI for KenKen Game """
+        self.root = master
         Frame.__init__(self, master)  # Creates the frame
         # Creates the canvas that will display the game
         self.w = Canvas(master, width=1002, height=1003)
@@ -219,18 +232,18 @@ class pre_Gui(Frame):
     def i(self,var):
         number1 = StringVar()
         self.var=var
-        l1 = Label(root, text="Enter the size of KenKen").place(x=20, y=60)
-        t1 = Entry(root, textvariable=number1).place(x=200, y=60)
+        l1 = Label(self.root, text="Enter the size of KenKen").place(x=20, y=60)
+        t1 = Entry(self.root, textvariable=number1).place(x=200, y=60)
 
        #for set button
        # returnSize = partial(storeSize, number1)
        # b1 = Button(root, text="Set", command=returnSize).place(x=200, y=300)
 
-        b2 = Button(root, text="Continue", command=root.destroy).place(x=250, y=300)
+        b2 = Button(self.root, text="Continue", command=self.root.destroy).place(x=250, y=300)
 
-        self.r1 = Radiobutton(root, text="Backtracking", variable=self.var, value=1, command=self.viewSelected).place(x=100, y=160)
-        self.r2 = Radiobutton(root, text="Backtracking with forward checking", variable=self.var, value=2,command=self.viewSelected).place(x=100, y=180)
-        self.r3 = Radiobutton(root, text="Backtracking with arc consistency", variable=self.var, value=3,command=self.viewSelected).place(x=100, y=200)
+        self.r1 = Radiobutton(self.root, text="Backtracking", variable=self.var, value=1, command=self.viewSelected).place(x=100, y=160)
+        self.r2 = Radiobutton(self.root, text="Backtracking with forward checking", variable=self.var, value=2,command=self.viewSelected).place(x=100, y=180)
+        self.r3 = Radiobutton(self.root, text="Backtracking with arc consistency", variable=self.var, value=3,command=self.viewSelected).place(x=100, y=200)
 
         return number1 , self.var
 
